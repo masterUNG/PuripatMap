@@ -12,6 +12,7 @@ class ShowMap extends StatefulWidget {
 
 class _ShowMapState extends State<ShowMap> {
   double? lat, lng;
+  List<double> positions = [13.674202726633432, 100.60671334561246];
 
   @override
   void initState() {
