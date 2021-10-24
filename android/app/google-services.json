@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "254249959102",
+    "project_id": "puripatmap",
+    "storage_bucket": "puripatmap.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:254249959102:android:28b50eacfa80db3d84a8ef",
+        "android_client_info": {
+          "package_name": "com.flutterthailand.puripatmap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "254249959102-uei6spha0rh9k29hk0qu0mv6i3kqk4is.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChEJYzax09LVZsGVVjs19tXYi09uL3yDU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "254249959102-uei6spha0rh9k29hk0qu0mv6i3kqk4is.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

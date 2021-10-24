@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:puripatmap/states/show_map.dart';
 
@@ -7,9 +9,14 @@ Map<String, WidgetBuilder> map = {
 
 String? initialRoute;
 
-void main() {
-  initialRoute = '/showMap';
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp().then((value) {
+    // print('## Firebase Initial Success');
+    // FirebaseMessaging.onBackgroundMessage((message) => null);
+    initialRoute = '/showMap';
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
