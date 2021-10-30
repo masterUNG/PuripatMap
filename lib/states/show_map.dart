@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:puripatmap/models/friend_model.dart';
@@ -70,7 +71,7 @@ class _ShowMapState extends State<ShowMap> {
 
     // FirebaseMessaging.onBackgroundMessage((message) {
     //   print('## message ==>> ${message.data}');
-      
+
     // });
   }
 
@@ -165,10 +166,20 @@ class _ShowMapState extends State<ShowMap> {
     });
   }
 
+  var testInfoWindow = InfoWindow(title: 'ทดสอบ');
+
+  List<LatLng> markerLatLngs = [];
+  int indexMarkerLatLng = 0;
+
   void createMarker(LatLng latLng, String title, String detail,
       [double? douHue]) {
+    markerLatLngs.add(latLng);
     MarkerId markerId = MarkerId('id${i++}');
     Marker marker = Marker(
+      onTap: () {
+        print(
+            '## You tap marker lat = ${markerLatLngs[indexMarkerLatLng].latitude},lng = ${markerLatLngs[indexMarkerLatLng].longitude} ');
+      },
       markerId: markerId,
       position: latLng,
       infoWindow: InfoWindow(title: title, snippet: detail),
@@ -181,6 +192,7 @@ class _ShowMapState extends State<ShowMap> {
     setState(() {
       markers[markerId] = marker;
     });
+    indexMarkerLatLng++;
   }
 
   @override
@@ -195,14 +207,75 @@ class _ShowMapState extends State<ShowMap> {
     );
   }
 
+  List<LatLng> polylineCoordinates = [];
+  String googleAPIkey = 'AIzaSyC6blN_8c-0yjwpkpRQmvV3qEFbgXeyanI';
+
+  Map<PolylineId, Polyline> polylines = {};
+
+  void createPolyline() {
+    PolylineId polylineId = const PolylineId('idPoly');
+
+    Polyline polyline = Polyline(
+      polylineId: polylineId,
+      color: Colors.red,
+      points: polylineCoordinates,
+    );
+
+    setState(() {
+      polylines[polylineId] = polyline;
+      print('### $polylineId === ${polyline}');
+    });
+  }
+
+  Future<void> drawRouteMap(LatLng destinateLatLng) async {
+    double desLat = destinateLatLng.latitude;
+    double desLng = destinateLatLng.longitude;
+
+    if (polylineCoordinates.isNotEmpty) {
+      polylineCoordinates.clear();
+      polylines.clear();
+    }
+
+    PolylinePoints polylinePoints = PolylinePoints();
+
+    PolylineResult polylineResult =
+        await polylinePoints.getRouteBetweenCoordinates(
+      googleAPIkey,
+      PointLatLng(lat!, lng!),
+      PointLatLng(desLat, desLng),
+      travelMode: TravelMode.driving,
+      wayPoints: [PolylineWayPoint(location: 'หัวหิน')],
+    );
+
+    if (polylineResult.points.isNotEmpty) {
+      for (var item in polylineResult.points) {
+        // print('### point ==> [${item.latitude}, ${item.longitude}]');
+        polylineCoordinates.add(LatLng(item.latitude, item.longitude));
+      }
+    } else {
+      // print('### polylineResult หาไม่ได้');
+    }
+
+    createPolyline();
+  }
+
   GoogleMap buildMap() {
     return GoogleMap(
+      onTap: (argument) {
+        double lat = argument.latitude;
+        double lng = argument.longitude;
+        print('## onTab Map ==> [$lat, $lng]');
+        createMarker(argument, 'เป้าหมาย', '[$lat, $lng]');
+        drawRouteMap(argument);
+      },
       initialCameraPosition: CameraPosition(
         target: LatLng(lat!, lng!),
-        zoom: 16,
+        zoom: 18,
       ),
       onMapCreated: (controller) {},
       markers: Set<Marker>.of(markers.values),
+      polylines:
+          polylineCoordinates.isEmpty ? {} : Set<Polyline>.of(polylines.values),
     );
   }
 }
